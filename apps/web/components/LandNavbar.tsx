@@ -3,12 +3,6 @@
 import { useState } from 'react';
 import { useTheme } from './ThemeProvider';
 
-const navigation = [
-  { name: 'About Us', href: '#' },
-  { name: 'Features', href: '#' },
-  { name: 'Marketplace', href: '#' },
-  { name: 'Contact', href: '#' },
-];
 
 function SunIcon() {
   return (
@@ -50,23 +44,14 @@ export default function LandNavbar() {
             <span className="text-emerald-400">line</span>
           </a>
 
-          {/* Desktop links — md and up */}
-          <nav className="hidden md:flex items-center gap-6 lg:gap-10">
-            {navigation.map(item => (
-              <a key={item.name} href={item.href}
-                className={`text-sm font-semibold transition-colors ${sub}`}>
-                {item.name}
-              </a>
-            ))}
-          </nav>
 
           {/* Desktop right actions — md and up */}
           <div className="hidden md:flex items-center gap-3">
             {/* Theme toggle */}
             <button onClick={toggleTheme} aria-label="Toggle theme"
               className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs sm:text-sm font-medium border transition-all ${isDark
-                  ? 'border-white/20 text-yellow-300 bg-white/5 hover:bg-white/10'
-                  : 'border-black/10 text-gray-600 bg-black/5 hover:bg-black/10'
+                ? 'border-white/20 text-yellow-300 bg-white/5 hover:bg-white/10'
+                : 'border-black/10 text-gray-600 bg-black/5 hover:bg-black/10'
                 }`}>
               {isDark ? <><SunIcon /><span>Light</span></> : <><MoonIcon /><span>Dark</span></>}
             </button>
@@ -121,19 +106,9 @@ export default function LandNavbar() {
               </button>
             </div>
 
-            {/* Nav links */}
-            <nav className={`flex-1 overflow-y-auto px-4 py-4 divide-y ${divider}`}>
-              <div className="pb-4 space-y-1">
-                {navigation.map(item => (
-                  <a key={item.name} href={item.href} onClick={() => setOpen(false)}
-                    className={`block rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors ${text} ${hoverRow}`}>
-                    {item.name}
-                  </a>
-                ))}
-              </div>
-
-              {/* Auth & theme */}
-              <div className="pt-4 space-y-2">
+            {/* Auth & theme */}
+            <nav className={`flex-1 overflow-y-auto px-4 py-4`}>
+              <div className="space-y-2">
                 <a href="#"
                   className="block rounded-lg bg-emerald-500 px-3 py-2.5 text-center text-sm font-semibold text-white hover:bg-emerald-400 transition-colors">
                   Sign in
@@ -144,8 +119,8 @@ export default function LandNavbar() {
                 </a>
                 <button onClick={toggleTheme}
                   className={`w-full flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium border transition-colors ${isDark
-                      ? 'border-white/20 text-yellow-300 bg-white/5 hover:bg-white/10'
-                      : 'border-black/10 text-gray-600 bg-black/5 hover:bg-black/10'
+                    ? 'border-white/20 text-yellow-300 bg-white/5 hover:bg-white/10'
+                    : 'border-black/10 text-gray-600 bg-black/5 hover:bg-black/10'
                     }`}>
                   {isDark ? <><SunIcon /><span>Switch to Light</span></> : <><MoonIcon /><span>Switch to Dark</span></>}
                 </button>

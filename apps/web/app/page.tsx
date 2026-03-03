@@ -2,6 +2,7 @@
 
 import LandNavbar from "@/components/LandNavbar";
 import ChatBubble from "@/components/ChatBubble";
+import Footer from "@/components/Footer";
 import { useTheme } from "@/components/ThemeProvider";
 
 export default function Home() {
@@ -31,8 +32,8 @@ export default function Home() {
 
         {/* Badge */}
         <span className={`inline-flex items-center mb-6 px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold tracking-widest uppercase border transition-colors duration-500 ${isDark
-            ? 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10'
-            : 'border-emerald-600/30 text-emerald-700 bg-emerald-50'
+          ? 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10'
+          : 'border-emerald-600/30 text-emerald-700 bg-emerald-50'
           }`}>
           PS-CRM Platform
         </span>
@@ -75,8 +76,8 @@ export default function Home() {
           <a
             href="#"
             className={`w-full sm:w-auto rounded-full px-8 py-3 text-sm font-semibold border transition-all duration-300 hover:-translate-y-0.5 text-center ${isDark
-                ? 'border-white/20 text-white hover:bg-white/5'
-                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+              ? 'border-white/20 text-white hover:bg-white/5'
+              : 'border-gray-300 text-gray-700 hover:bg-gray-50'
               }`}
           >
             Learn More →
@@ -86,6 +87,9 @@ export default function Home() {
 
       {/* Floating chat bubble */}
       <ChatBubble />
+
+      {/* Footer */}
+      <Footer />
     </main>
   );
 }
