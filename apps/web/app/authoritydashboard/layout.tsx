@@ -11,7 +11,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     ...defaultSidebarConfig,
     branding: {
       ...defaultSidebarConfig.branding,
-      title: "Citizen",
+      title: "Authority",
     },
   };
 
