@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { MessageCircle, X, Send, Loader2, Plus, Camera } from "lucide-react";
+import { MessageCircle, X, Send, Loader2, Plus } from "lucide-react";
 import gsap from "gsap";
 import { sendToGemini } from "@/lib/gemini";
 import type { ChatMessage, ExtractedComplaint, GeminiResponse } from "@/lib/gemini";
@@ -42,6 +42,33 @@ interface ImageTicketPreview {
   longitude: number;
   user_text: string;
   confirm_prompt: string;
+}
+
+const ISSUE_TYPE_CATEGORY_MAP: Array<{ keywords: string[]; categoryId: number }> = [
+  { keywords: ["metro", "station", "escalator", "lift"], categoryId: 1 },
+  { keywords: ["highway", "expressway", "toll", "bridge", "road", "pothole", "flyover"], categoryId: 11 },
+  { keywords: ["garbage", "waste", "trash", "sweeping", "toilet"], categoryId: 16 },
+  { keywords: ["drain", "sewage", "sewer", "water", "leak", "pipeline"], categoryId: 27 },
+  { keywords: ["street light", "light", "electricity", "power", "wire", "transformer"], categoryId: 25 },
+  { keywords: ["traffic", "signal", "parking", "accident"], categoryId: 36 },
+  { keywords: ["crime", "safety", "theft", "harassment"], categoryId: 35 },
+  { keywords: ["air", "noise", "pollution", "burning"], categoryId: 40 },
+];
+
+function categoryFromIssueType(issueType: string): number {
+  const normalized = issueType.toLowerCase();
+  const match = ISSUE_TYPE_CATEGORY_MAP.find(({ keywords }) =>
+    keywords.some((keyword) => normalized.includes(keyword)),
+  );
+  return match?.categoryId ?? 15;
+}
+
+function severityToLevel(severity: string): "L1" | "L2" | "L3" | "L4" {
+  const normalized = severity.trim().toLowerCase();
+  if (normalized === "critical" || normalized === "l4") return "L4";
+  if (normalized === "high" || normalized === "l3") return "L3";
+  if (normalized === "medium" || normalized === "l2") return "L2";
+  return "L1";
 }
 
 /* ------------------------------------------------------------------ */
@@ -343,21 +370,21 @@ export default function ChatWidget() {
         return;
       }
 
+      const { lat, lng } = await getLocation();
+      const categoryId = categoryFromIssueType(pendingComplaint.issue_type);
+      const severityLevel = severityToLevel(pendingComplaint.severity);
+
       const res = await fetch("/api/complaints", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           citizen_id: user.id,
-          category_id: pendingComplaint.category_id,
+          category_id: categoryId,
           title: pendingComplaint.title,
           description: pendingComplaint.description,
-          severity: pendingComplaint.severity,
-          latitude: pendingComplaint.latitude,
-          longitude: pendingComplaint.longitude,
-          ward_name: pendingComplaint.ward_name,
-          pincode: pendingComplaint.pincode,
-          address_text: pendingComplaint.address_text,
-          assigned_department: pendingComplaint.assigned_department,
+          severity: severityLevel,
+          latitude: lat,
+          longitude: lng,
           city: "Delhi",
         }),
       });
@@ -474,12 +501,10 @@ export default function ChatWidget() {
                         <tbody>
                           {[
                             ["Title", msg.extracted.title],
-                            ["Category", msg.extracted.category_name],
-                            ["Severity", `${msg.extracted.severity} — ${msg.extracted.severity_label}`],
-                            ["Ward", msg.extracted.ward_name],
-                            ["Pincode", msg.extracted.pincode],
-                            ["Address", msg.extracted.address_text],
-                            ["Department", msg.extracted.assigned_department],
+                            ["Issue Type", msg.extracted.issue_type],
+                            ["Severity", msg.extracted.severity],
+                            ["Description", msg.extracted.description],
+                            ["Confidence", `${Math.round(msg.extracted.confidence * 100)}%`],
                           ].map(([label, value]) => (
                             <tr key={label} className="border-b border-gray-100 last:border-0 dark:border-gray-700">
                               <td className="py-1 pr-2 font-medium text-gray-500 dark:text-gray-400">{label}</td>

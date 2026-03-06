@@ -5,7 +5,7 @@ import base64
 from io import BytesIO
 from typing import Optional, Dict, List
 
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Header
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Header, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from supabase import create_client, Client
@@ -40,16 +40,18 @@ app = FastAPI(
 )
 
 origins = [
+    "http://localhost:3000",
+    "http://localhost:3001",
     "https://jansamadhan.perkkk.dev",
-    "http://localhost:3000"
+    "https://api.jansamadhan.perkkk.dev",
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_credentials=False,
+    allow_methods=["POST", "OPTIONS", "GET"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 
@@ -351,6 +353,10 @@ Return ONLY JSON in this exact shape:
 # 7. ANALYZE ENDPOINT  (preview only — does NOT write to DB)
 # =========================================================
 
+@app.options("/analyze")
+async def analyze_options() -> Response:
+    return Response(status_code=204)
+
 @app.post("/analyze", response_model=TicketPreview)
 async def analyze(
     image: UploadFile = File(...),
@@ -393,6 +399,10 @@ async def analyze(
 # =========================================================
 # 8. CONFIRM ENDPOINT  (user confirms preview -> writes to DB)
 # =========================================================
+
+@app.options("/confirm")
+async def confirm_options() -> Response:
+    return Response(status_code=204)
 
 @app.post("/confirm", response_model=TicketCreated)
 async def confirm(
