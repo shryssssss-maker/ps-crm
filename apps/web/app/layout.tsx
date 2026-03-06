@@ -21,8 +21,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Leafline",
-  description: "Leafline – your nature-inspired CRM",
+  title: "JanSamadhan",
+  description: "JanSamadhan – your civic complaint CRM",
 };
 
 export default function RootLayout({
