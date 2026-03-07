@@ -20,24 +20,6 @@ const tasks: Task[] = [
   { id: "CMP-8826", lat: 26.9118, lng: 75.7832, status: "rejected" },
 ]
 
-function markerIcon(color: string) {
-
-  return new L.DivIcon({
-    className: "",
-    html: `
-      <div style="
-        width:18px;
-        height:18px;
-        border-radius:50%;
-        background:${color};
-        border:3px solid white;
-        box-shadow:0 0 6px rgba(0,0,0,0.25);
-      "></div>
-    `,
-  })
-
-}
-
 function getColor(status: string) {
 
   switch (status) {
@@ -57,6 +39,24 @@ function getColor(status: string) {
 
 }
 
+function createIcon(color: string) {
+
+  return new L.DivIcon({
+    className: "",
+    html: `
+      <div style="
+        width:18px;
+        height:18px;
+        border-radius:50%;
+        background:${color};
+        border:3px solid white;
+        box-shadow:0 0 6px rgba(0,0,0,0.25);
+      "></div>
+    `,
+  })
+
+}
+
 export default function TaskMapWidget() {
 
   const mapRef = useRef<HTMLDivElement>(null)
@@ -67,8 +67,16 @@ export default function TaskMapWidget() {
 
     gsap.fromTo(
       mapRef.current,
-      { opacity: 0, scale: 0.96 },
-      { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" }
+      {
+        opacity: 0,
+        scale: 0.96
+      },
+      {
+        opacity: 1,
+        scale: 1,
+        duration: 0.5,
+        ease: "power2.out"
+      }
     )
 
   }, [])
@@ -84,7 +92,7 @@ export default function TaskMapWidget() {
         Nearby Tasks
       </h2>
 
-      <div className="h-[260px] rounded-lg overflow-hidden relative">
+      <div className="relative h-[260px] rounded-lg overflow-hidden">
 
         <MapContainer
           center={[26.9124, 75.7873]}
@@ -95,6 +103,7 @@ export default function TaskMapWidget() {
 
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution="&copy; OpenStreetMap"
           />
 
           {tasks.map((task) => (
@@ -102,7 +111,7 @@ export default function TaskMapWidget() {
             <Marker
               key={task.id}
               position={[task.lat, task.lng]}
-              icon={markerIcon(getColor(task.status))}
+              icon={createIcon(getColor(task.status))}
             >
 
               <Popup>
@@ -137,13 +146,13 @@ export default function TaskMapWidget() {
 
         {/* Floating Controls */}
 
-        <div className="absolute top-3 right-3 flex flex-col gap-2">
+        <div className="absolute top-3 right-3 z-[1000] flex flex-col gap-2 pointer-events-auto">
 
-          <button className="bg-white shadow px-3 py-1 text-sm rounded-md">
+          <button className="bg-white shadow px-3 py-1 text-sm rounded-md border hover:bg-gray-50">
             Navigate
           </button>
 
-          <button className="bg-white shadow px-3 py-1 text-sm rounded-md">
+          <button className="bg-white shadow px-3 py-1 text-sm rounded-md border hover:bg-gray-50">
             View Task
           </button>
 
@@ -151,30 +160,30 @@ export default function TaskMapWidget() {
 
         {/* Legend */}
 
-        <div className="absolute bottom-3 right-3 bg-white border rounded-lg shadow-sm p-3 text-xs">
+        <div className="absolute bottom-3 right-3 z-[1000] bg-white border rounded-lg shadow-sm p-3 text-xs pointer-events-auto">
 
           <div className="font-semibold mb-2">
             Legend
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-1">
             <span className="w-3 h-3 rounded-full bg-red-600"></span>
-            Center
+            Me
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-1">
             <span className="w-3 h-3 rounded-full bg-orange-500"></span>
-            Orange
+            Recent
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-1">
             <span className="w-3 h-3 rounded-full bg-yellow-400"></span>
-            Progress
+            In Progress
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-1">
             <span className="w-3 h-3 rounded-full bg-green-600"></span>
-            Complete
+            Completed
           </div>
 
           <div className="flex items-center gap-2">
