@@ -74,8 +74,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         onLogout={handleLogout}
       />
 
-      <main className={`flex-1 w-full overflow-x-hidden transition-all duration-300 ${isCollapsed ? "lg:pl-20" : "lg:pl-64"}`}>
-        <button
+
+      {/* Keep content adjacent to fixed sidebar on desktop */}
+      <main className={`flex-1 w-full p-4 transition-[margin] duration-300 ${isCollapsed ? "lg:ml-20" : "lg:ml-64"}`}>
+        <button 
           onClick={() => setIsSidebarOpen(true)}
           className="lg:hidden p-2 m-4 bg-purple-600 text-white rounded-md"
           aria-label="Open menu"

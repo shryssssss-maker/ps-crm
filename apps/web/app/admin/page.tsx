@@ -1,8 +1,9 @@
-export default function CitizenDashboardPage() {
+import AdminStatsOverview from "@/components/admin-dashboard/AdminStatsOverview"
+
+export default function AdminDashboardPage() {
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Citizen Dashboard</h1>
-      <p>Welcome to your dashboard. Use the sidebar to navigate between sections.</p>
+    <div className="p-2 sm:p-4">
+      <AdminStatsOverview />
     </div>
-  );
+  )
 }

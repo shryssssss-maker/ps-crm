@@ -26,8 +26,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       />
 
 
-      {/* Add a temporary button to test mobile toggle */}
-      <main className="flex-1 w-full p-4">
+      {/* Keep content adjacent to fixed sidebar on desktop */}
+      <main className={`flex-1 w-full p-4 transition-[margin] duration-300 ${isCollapsed ? "lg:ml-20" : "lg:ml-64"}`}>
         <button 
           onClick={() => setIsSidebarOpen(true)}
           className="lg:hidden p-2 bg-purple-600 text-white rounded-md mb-4"
