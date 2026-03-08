@@ -113,6 +113,8 @@ export default function AnimatedAuth({
   const loginFormRef = useRef<HTMLDivElement>(null);
   const signupFormRef = useRef<HTMLDivElement>(null);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY?.trim() ?? '';
+  const isRecaptchaConfigured = recaptchaSiteKey.length > 0;
 
   const isDark = theme === 'dark';
   const activeThemeColor = isDark ? themeColorDark : themeColor;
@@ -173,6 +175,11 @@ export default function AnimatedAuth({
   const handleLogin = async () => {
   setError('');
   setMessage('');
+
+  if (!isRecaptchaConfigured) {
+    setError('reCAPTCHA is not configured. Add NEXT_PUBLIC_RECAPTCHA_SITE_KEY in apps/web/.env.local and restart the dev server.');
+    return;
+  }
 
   const token = recaptchaRef.current?.getValue();
   if (!token) {
@@ -381,13 +388,19 @@ export default function AnimatedAuth({
               ))}
             </div>
           </div>
-          <ReCAPTCHA
-             ref={recaptchaRef}
-             sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
-             theme={isDark ? 'dark' : 'light'}
-             size="normal"
-            className="mt-4"
-          />
+          {isRecaptchaConfigured ? (
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={recaptchaSiteKey}
+              theme={isDark ? 'dark' : 'light'}
+              size="normal"
+              className="mt-4"
+            />
+          ) : (
+            <p className="mt-4 text-xs text-red-300">
+              reCAPTCHA is unavailable. Add NEXT_PUBLIC_RECAPTCHA_SITE_KEY in apps/web/.env.local and restart.
+            </p>
+          )}
           <button 
             onClick={handleLogin}
             disabled={loading}
