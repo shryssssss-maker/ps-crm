@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { 
-  Flame, 
-  LayoutGrid, 
-  Target, 
-  FolderKanban, 
-  FileText, 
-  MessageSquare, 
+import {
+  Flame,
+  LayoutGrid,
+  Target,
+  FolderKanban,
+  FileText,
+  MessageSquare,
   Settings,
   X,
   ChevronLeft,
@@ -119,40 +119,40 @@ export const defaultSidebarConfig: Omit<SidebarConfig, "isOpen" | "onClose" | "i
     badgeText: `${SIDEBAR_LIGHT_COLORS.badgeText} ${SIDEBAR_DARK_COLORS.badgeText}`,
     toggleButtonBg: `${SIDEBAR_LIGHT_COLORS.toggleButtonBg} ${SIDEBAR_DARK_COLORS.toggleButtonBg}`,
   },
-navigation: [
-  {
-    id: "dashboard",
-    name: "Dashboard",
-    icon: <LayoutGrid size={20} strokeWidth={2.5} />,
-    href: "/authority"
-  },
-  {
-    id: "track",
-    name: "Track",
-    icon: <Target size={20} strokeWidth={2} />,
-    href: "/authority/track"
-  },
-  {
-    id: "reports",
-    name: "Reports",
-    icon: <FileText size={20} strokeWidth={2} />,
-    href: "/authority/reports"
-  }
-],
-bottomNavigation: [
-  { id: "support", name: "Support", icon: <MessageSquare size={20} strokeWidth={2} />, href: "#" },
-  { id: "settings", name: "Settings", icon: <Settings size={20} strokeWidth={2} />, href: "#" },
-],
+  navigation: [
+    {
+      id: "dashboard",
+      name: "Dashboard",
+      icon: <LayoutGrid size={20} strokeWidth={2.5} />,
+      href: "/authority"
+    },
+    {
+      id: "track",
+      name: "Track",
+      icon: <Target size={20} strokeWidth={2} />,
+      href: "/authority/track"
+    },
+    {
+      id: "reports",
+      name: "Reports",
+      icon: <FileText size={20} strokeWidth={2} />,
+      href: "/authority/reports"
+    }
+  ],
+  bottomNavigation: [
+    { id: "support", name: "Support", icon: <MessageSquare size={20} strokeWidth={2} />, href: "#" },
+    { id: "settings", name: "Settings", icon: <Settings size={20} strokeWidth={2} />, href: "#" },
+  ],
 };
 
 
 // 3. The Component
-const Sidebar: React.FC<SidebarConfig> = ({ 
-  branding, 
-  colors, 
-  navigation, 
-  bottomNavigation, 
-  isOpen, 
+const Sidebar: React.FC<SidebarConfig> = ({
+  branding,
+  colors,
+  navigation,
+  bottomNavigation,
+  isOpen,
   onClose,
   isCollapsed = false,
   onToggleCollapse,
@@ -161,11 +161,11 @@ const Sidebar: React.FC<SidebarConfig> = ({
   const sidebarRef = useRef<HTMLElement>(null);
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === 'dark';
-  
-const [mounted, setMounted] = useState(false);
-useEffect(() => {
-  setMounted(true);
-}, []);
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   useEffect(() => {
     // GSAP stagger animation - only runs when the sidebar is rendered/opened
     const ctx = gsap.context(() => {
@@ -190,17 +190,17 @@ useEffect(() => {
     <>
       {/* Mobile Overlay */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-gray-900/50 dark:bg-black/60 z-40 lg:hidden transition-opacity"
           onClick={onClose}
         />
       )}
 
       {/* Sidebar Drawer / Static Sidebar */}
-      <aside 
-        ref={sidebarRef} 
+      <aside
+        ref={sidebarRef}
         className={`
-          fixed lg:relative top-0 left-0 z-50 min-h-screen flex flex-col py-8 overflow-x-visible font-sans transition-all duration-300 ease-in-out
+          fixed lg:relative top-0 left-0 z-[1002] min-h-screen flex flex-col py-8 overflow-x-visible font-sans transition-all duration-300 ease-in-out
           ${colors.background} ${colors.border} lg:border-r lg:relative lg:translate-x-0
           ${isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"}
           ${isCollapsed ? "w-20" : "w-64"}
@@ -209,7 +209,7 @@ useEffect(() => {
         {/* Desktop Collapse Toggle */}
         <button
           onClick={onToggleCollapse}
-          className={`absolute -right-3 top-10 z-50 hidden lg:flex h-6 w-6 items-center justify-center rounded-full border text-gray-500 shadow-md hover:text-gray-900 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-[#b4725a] dark:focus:ring-purple-500 focus:outline-none ${colors.toggleButtonBg}`}
+          className={`absolute -right-3 top-10 z-[1002] hidden lg:flex h-6 w-6 items-center justify-center rounded-full border text-gray-500 shadow-md hover:text-gray-900 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-[#b4725a] dark:focus:ring-purple-500 focus:outline-none ${colors.toggleButtonBg}`}
         >
           {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>
@@ -239,13 +239,13 @@ useEffect(() => {
                 {item.isActive && (
                   <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 rounded-r-md ${colors.activeIndicator}`} />
                 )}
-                <Link 
-                  href={item.href} 
+                <Link
+                  href={item.href}
                   className={`
                     flex items-center ${isCollapsed ? "justify-center px-2" : "justify-start px-4"} py-3 ml-2 rounded-xl font-medium transition-all duration-200
                     focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#b4725a] dark:focus:ring-purple-500
-                    ${item.isActive 
-                      ? `${colors.activeBg} ${colors.activeText} font-semibold` 
+                    ${item.isActive
+                      ? `${colors.activeBg} ${colors.activeText} font-semibold`
                       : `${colors.textMuted} ${colors.textHover} ${colors.bgHover}`
                     }
                   `}
