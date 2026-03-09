@@ -385,7 +385,10 @@ export default function AnimatedAuth({
                 setError('reCAPTCHA expired. Please complete it again.');
               }}
               onErrored={() => {
-                setError('reCAPTCHA widget error. This usually means the site key is invalid for this domain or key type.');
+                console.error(
+                  'reCAPTCHA widget error. This usually means the site key is invalid for this domain or key type.'
+                );
+                setError('reCAPTCHA failed to load. Please try again later.');
               }}
             />
           ) : (
