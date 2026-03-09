@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Loader2, Plus } from "lucide-react";
+import { Send, Loader2, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import gsap from "gsap";
 import { sendToGemini } from "@/lib/gemini";
 import type { ChatMessage, ExtractedComplaint, GeminiResponse } from "@/lib/gemini";
@@ -142,6 +142,8 @@ export default function ChatPanel({ onClose: _onClose }: { onClose?: () => void 
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [initialized, setInitialized] = useState(false);
+  const [isMapExpanded, setIsMapExpanded] = useState(false);
+  const [expandedImagePreview, setExpandedImagePreview] = useState<Record<string, boolean>>({});
 
   /* ----- refs ----- */
   const panelRef = useRef<HTMLDivElement>(null);
@@ -159,6 +161,10 @@ export default function ChatPanel({ onClose: _onClose }: { onClose?: () => void 
     requestAnimationFrame(() => {
       scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
     });
+  }, []);
+
+  const toggleImagePreviewDetails = useCallback((messageId: string) => {
+    setExpandedImagePreview((prev) => ({ ...prev, [messageId]: !prev[messageId] }));
   }, []);
 
   /** Get browser geolocation and keep strict location metadata with fallback. */
@@ -632,7 +638,7 @@ export default function ChatPanel({ onClose: _onClose }: { onClose?: () => void 
                 />
               )}
 
-              {renderMarkdown(msg.text)}
+              {!msg.imagePreview && renderMarkdown(msg.text)}
 
               {/* Text-based extracted complaint summary table */}
               {msg.extracted && (
@@ -665,32 +671,62 @@ export default function ChatPanel({ onClose: _onClose }: { onClose?: () => void 
 
               {/* Image-based ticket preview from FastAPI /analyze */}
               {msg.imagePreview && (
-                <div className="mt-3 rounded-lg border border-gray-300 bg-white p-3 text-xs dark:border-gray-600 dark:bg-gray-900">
+                <div className="mt-3 w-full max-w-[34rem] rounded-lg border border-gray-300 bg-white p-3 text-xs dark:border-gray-600 dark:bg-gray-900">
                   <p className="mb-2 font-semibold text-gray-700 dark:text-gray-200">Confirm Your Complaint</p>
-                  {pendingImageDataUrl && (
-                    <img
-                      src={pendingImageDataUrl}
-                      alt="Issue photo"
-                      className="mb-2 rounded-lg max-h-32 w-full object-cover"
-                    />
-                  )}
-                  <table className="w-full text-left">
-                    <tbody>
-                      {[
-                        ["Title", msg.imagePreview.title],
-                        ["Issue Type", msg.imagePreview.issue_name],
-                        ["Severity", `${msg.imagePreview.severity} (${msg.imagePreview.severity_db})`],
-                        ["Location", msg.imagePreview.formatted_address],
-                        ["Description", msg.imagePreview.description],
-                        ["DIGIPIN", msg.imagePreview.digipin],
-                      ].map(([label, value]) => (
-                        <tr key={label} className="border-b border-gray-100 last:border-0 dark:border-gray-700">
-                          <td className="py-1 pr-2 font-medium text-gray-500 dark:text-gray-400">{label}</td>
-                          <td className="py-1 text-gray-800 dark:text-gray-200">{value}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  <div className={`grid gap-3 ${pendingImageDataUrl ? "grid-cols-[96px_minmax(0,1fr)]" : "grid-cols-1"}`}>
+                    {pendingImageDataUrl && (
+                      <div className="h-24 w-24 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
+                        <img
+                          src={pendingImageDataUrl}
+                          alt="Issue photo"
+                          className="h-full w-full object-contain"
+                        />
+                      </div>
+                    )}
+
+                    <div className="min-w-0">
+                      <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1.5 text-left">
+                        {[
+                          ["Title", msg.imagePreview.title],
+                          ["Issue Type", msg.imagePreview.issue_name],
+                          ["Severity", `${msg.imagePreview.severity} (${msg.imagePreview.severity_db})`],
+                          ["Location", msg.imagePreview.formatted_address],
+                          ["Description", msg.imagePreview.description],
+                          ["DIGIPIN", msg.imagePreview.digipin],
+                        ].map(([label, value]) => {
+                          const shouldTrimLongText =
+                            !expandedImagePreview[msg.id] &&
+                            (label === "Location" || label === "Description") &&
+                            value.length > 110;
+                          const displayValue = shouldTrimLongText ? `${value.slice(0, 110)}...` : value;
+
+                          return (
+                            <React.Fragment key={label}>
+                              <p className="py-0.5 font-medium text-gray-500 dark:text-gray-400">{label}</p>
+                              <p className="py-0.5 break-words text-gray-800 dark:text-gray-200">{displayValue}</p>
+                            </React.Fragment>
+                          );
+                        })}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => toggleImagePreviewDetails(msg.id)}
+                        className="mt-2 inline-flex items-center gap-1 rounded px-1 py-0.5 text-[11px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100"
+                      >
+                        {expandedImagePreview[msg.id] ? (
+                          <>
+                            <ChevronUp size={13} /> Show less
+                          </>
+                        ) : (
+                          <>
+                            <ChevronDown size={13} /> Show full details
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
                   <p className="mt-2 text-center font-semibold text-amber-600 dark:text-amber-400">
                     Type <strong>YES</strong> to confirm submission
                   </p>
@@ -726,45 +762,75 @@ export default function ChatPanel({ onClose: _onClose }: { onClose?: () => void 
       <div className="border-t border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-900">
         {hasPending && pendingLocation && (
           <div className="mb-2 rounded-lg border border-gray-200 bg-gray-50 p-2 dark:border-gray-700 dark:bg-gray-800">
-            <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">Detected location</p>
-            <p className="mb-2 text-[11px] text-gray-600 dark:text-gray-300">
-              Lat {pendingLocation.lat.toFixed(6)}, Lng {pendingLocation.lng.toFixed(6)} | Accuracy {Math.round(pendingLocation.accuracy)}m
-            </p>
-            <LocationPinPicker
-              lat={pendingLocation.lat}
-              lng={pendingLocation.lng}
-              onPinMove={(lat, lng) => {
-                setPendingLocation((prev) => ({
-                  lat,
-                  lng,
-                  accuracy: prev?.accuracy ?? 9999,
-                  timestamp: new Date().toISOString(),
-                }));
-                setLocationConfirmed(false);
+            <div className="mb-2">
+              <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">Detected location</p>
+            </div>
+            <div
+              className="overflow-hidden transition-all duration-300 ease-in-out"
+              style={{
+                maxHeight: isMapExpanded ? '400px' : '0px',
+                opacity: isMapExpanded ? 1 : 0,
               }}
-            />
-            <div className="mt-2 flex items-center gap-2">
+            >
+              {isMapExpanded && (
+                <LocationPinPicker
+                  key={pendingLocation.timestamp}
+                  lat={pendingLocation.lat}
+                  lng={pendingLocation.lng}
+                  onPinMove={(lat, lng) => {
+                    setPendingLocation((prev) => ({
+                      lat,
+                      lng,
+                      accuracy: prev?.accuracy ?? 9999,
+                      timestamp: new Date().toISOString(),
+                    }));
+                    setLocationConfirmed(false);
+                  }}
+                />
+              )}
+            </div>
+            <div className="mt-2 flex items-start justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setLocationConfirmed(true)}
+                  className="rounded-md bg-[#4f392e] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#b4725a] transition-all duration-200 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-[#b4725a] focus:ring-offset-2 dark:bg-purple-600 dark:hover:bg-purple-500 dark:focus:ring-purple-500 dark:focus:ring-offset-gray-900"
+                >
+                  Confirm location
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const loc = await getLocation();
+                    setPendingLocation(loc);
+                    setLocationConfirmed(false);
+                  }}
+                  className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-gray-600 dark:focus:ring-offset-gray-900"
+                >
+                  Move pin to GPS
+                </button>
+                <span className={`text-[11px] transition-colors duration-200 ${locationConfirmed ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}`}>
+                  {locationConfirmed ? "Location confirmed" : "Move pin if needed, then confirm"}
+                </span>
+              </div>
+
               <button
                 type="button"
-                onClick={() => setLocationConfirmed(true)}
-                className="rounded-md bg-[#4f392e] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#b4725a] transition-all duration-200 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-[#b4725a] focus:ring-offset-2 dark:bg-purple-600 dark:hover:bg-purple-500 dark:focus:ring-purple-500 dark:focus:ring-offset-gray-900"
+                onClick={() => setIsMapExpanded(!isMapExpanded)}
+                className="flex shrink-0 items-center gap-1 px-2 py-1 rounded text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-700"
               >
-                Confirm location
+                {isMapExpanded ? (
+                  <>
+                    <ChevronDown size={14} />
+                    Hide Map
+                  </>
+                ) : (
+                  <>
+                    <ChevronUp size={14} />
+                    Show Map
+                  </>
+                )}
               </button>
-              <button
-                type="button"
-                onClick={async () => {
-                  const loc = await getLocation();
-                  setPendingLocation(loc);
-                  setLocationConfirmed(false);
-                }}
-                className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-gray-600 dark:focus:ring-offset-gray-900"
-              >
-                Move pin to GPS
-              </button>
-              <span className={`text-[11px] transition-colors duration-200 ${locationConfirmed ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}`}>
-                {locationConfirmed ? "Location confirmed" : "Move pin if needed, then confirm"}
-              </span>
             </div>
           </div>
         )}
