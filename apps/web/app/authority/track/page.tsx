@@ -175,20 +175,7 @@ export default function TrackPage() {
       </div>
 
       {/* MAP CARD */}
-      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
-        <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50/80 px-5 py-3 dark:border-gray-800 dark:bg-gray-900">
-          <div className="flex gap-5 text-sm font-medium text-gray-600">
-            {([["bg-green-500", "Low"], ["bg-amber-400", "Medium"], ["bg-orange-500", "High"], ["bg-red-500", "Critical"]] as [string, string][]).map(([c, l]) => (
-              <span key={l} className="flex items-center gap-1.5">
-                <span className={`h-2.5 w-2.5 rounded-full ${c}`} />{l}
-              </span>
-            ))}
-          </div>
-          <div className="flex items-center gap-3">
-            {!loading && <span className="text-xs text-gray-400">{complaintIds.length} on map</span>}
-            <button className="rounded-lg bg-gray-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-gray-700 transition-colors">Full Map</button>
-          </div>
-        </div>
+      <div className="relative z-0 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
         <div className="h-[400px] w-full">
           <MapComponent selectedComplaintId={selectedId} />
         </div>
@@ -198,7 +185,7 @@ export default function TrackPage() {
       <div className="rounded-2xl bg-[#eef3f4] p-5 dark:bg-gray-900/50">
         <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-base font-bold text-gray-900 dark:text-white">Complaints Overview</h2>
+            <h2 className="text-base font-bold text-gray-900 dark:text-white">Complaints</h2>
             <p className="text-xs text-gray-500">
               {loading ? "Loading…" : error ? error : `Showing ${filtered.length} of ${complaints.length}`}
             </p>
@@ -219,13 +206,13 @@ export default function TrackPage() {
           <div className="relative">
             <button onClick={() => { setIsSortOpen(o => !o); setIsStatOpen(false) }}
               className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-colors dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
-              {sortBy === "latest" ? "Latest first" : "Oldest first"} <span className="text-xs opacity-60">▼</span>
+              {sortBy === "latest" ? "Latest" : "Oldest"} <span className="text-xs opacity-60">▼</span>
             </button>
             <div className={`absolute right-0 top-full z-50 mt-1 w-36 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl transition-all duration-200 dark:border-gray-700 dark:bg-gray-800 ${isSortOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"}`}>
               {["latest", "oldest"].map(o => (
                 <button key={o} onClick={() => { setSortBy(o); setIsSortOpen(false) }}
                   className={`block w-full px-4 py-2.5 text-left text-sm transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 ${sortBy === o ? "font-semibold text-[#b4725a]" : "text-gray-700 dark:text-gray-300"}`}>
-                  {o === "latest" ? "Latest first" : "Oldest first"}
+                  {o === "latest" ? "Latest" : "Oldest"}
                 </button>
               ))}
             </div>
@@ -233,12 +220,12 @@ export default function TrackPage() {
           <div className="relative">
             <button onClick={() => { setIsStatOpen(o => !o); setIsSortOpen(false) }}
               className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-colors dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
-              {statusFilter === "all" ? "All statuses" : STATUS_LABEL[statusFilter as Status]} <span className="text-xs opacity-60">▼</span>
+              {statusFilter === "all" ? "Status" : STATUS_LABEL[statusFilter as Status]} <span className="text-xs opacity-60">▼</span>
             </button>
             <div className={`absolute right-0 top-full z-50 mt-1 w-44 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl transition-all duration-200 dark:border-gray-700 dark:bg-gray-800 ${isStatOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"}`}>
               <button onClick={() => { setStatusFilter("all"); setIsStatOpen(false) }}
                 className={`block w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${statusFilter === "all" ? "font-semibold text-[#b4725a]" : "text-gray-700 dark:text-gray-300"}`}>
-                All statuses
+                Status
               </button>
               {ALL_STATUSES.map(s => (
                 <button key={s} onClick={() => { setStatusFilter(s); setIsStatOpen(false) }}
