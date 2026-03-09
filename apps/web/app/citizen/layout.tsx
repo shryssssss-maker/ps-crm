@@ -205,6 +205,21 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     branding: {
       ...defaultSidebarConfig.branding,
       title: "Citizen",
+      icon: (
+        <div
+          className="w-10 h-10 lg:w-[42px] lg:h-[42px] bg-[#C9A84C]"
+          style={{
+            WebkitMaskImage: 'url(/Emblem.svg)',
+            WebkitMaskSize: 'contain',
+            WebkitMaskRepeat: 'no-repeat',
+            WebkitMaskPosition: 'center',
+            maskImage: 'url(/Emblem.svg)',
+            maskSize: 'contain',
+            maskRepeat: 'no-repeat',
+            maskPosition: 'center',
+          }}
+        />
+      ),
     },
     colors: {
       ...defaultSidebarConfig.colors,
@@ -231,7 +246,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center justify-between gap-4 px-4 sm:px-6 py-4 min-w-0 max-w-full">
             {/* Left side - Hamburger and Title */}
             <div className="flex items-center gap-3 flex-1 min-w-0">
-              <button 
+              <button
                 onClick={() => setIsSidebarOpen(true)}
                 className="lg:hidden p-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors flex-shrink-0"
                 aria-label="Open menu"

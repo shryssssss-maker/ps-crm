@@ -85,7 +85,7 @@ export const SIDEBAR_DARK_COLORS: SidebarThemeColors = {
 // 1. The Exported Interface for Maximum Customizability
 export interface SidebarConfig {
   branding: {
-    title: string;
+    title: React.ReactNode;
     icon: React.ReactNode;
   };
   colors: SidebarThemeColors;
@@ -103,7 +103,11 @@ export interface SidebarConfig {
 export const defaultSidebarConfig: Omit<SidebarConfig, "isOpen" | "onClose" | "isCollapsed" | "onToggleCollapse"> = {
   branding: {
     title: "Taskify",
-    icon: <Flame size={24} strokeWidth={2.5} className="text-purple-600 dark:text-purple-400" />,
+    icon: (
+      <div className="bg-purple-100 dark:bg-purple-900/30 p-1.5 rounded-lg shrink-0">
+        <Flame size={24} strokeWidth={2.5} className="text-purple-600 dark:text-purple-400" />
+      </div>
+    ),
   },
   colors: {
     background: `${SIDEBAR_LIGHT_COLORS.background} ${SIDEBAR_DARK_COLORS.background}`,
@@ -219,12 +223,14 @@ const Sidebar: React.FC<SidebarConfig> = ({
           {/* Logo & Mobile Close Button */}
           <div className={`flex items-center ${isCollapsed ? "justify-center px-2" : "justify-between px-8"} mb-10 menu-item transition-all duration-300`}>
             <div className={`flex items-center ${isCollapsed ? "justify-center gap-0" : "gap-3"} transition-all duration-300`}>
-              <div className="bg-purple-100 dark:bg-purple-900/30 p-1.5 rounded-lg shrink-0">
+              <div className="shrink-0 flex items-center justify-center">
                 {branding.icon}
               </div>
-              <span className={`text-2xl font-bold ${colors.textMain} whitespace-nowrap overflow-hidden transition-all duration-300 ${isCollapsed ? "max-w-0 opacity-0" : "max-w-[200px] opacity-100"}`}>
-                {branding.title}
-              </span>
+              <div className={`whitespace-nowrap overflow-hidden transition-all duration-300 ${isCollapsed ? "max-w-0 opacity-0" : "max-w-[200px] opacity-100"}`}>
+                <div className={`text-[21px] font-medium leading-tight ${colors.textMain}`}>
+                  {branding.title}
+                </div>
+              </div>
             </div>
             {/* Close button only visible on mobile */}
             <button onClick={onClose} className={`lg:hidden text-gray-500 hover:text-gray-900 dark:hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#b4725a] dark:focus:ring-purple-500 rounded-md ${isCollapsed ? "hidden" : "block"}`}>
