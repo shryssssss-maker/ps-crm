@@ -48,7 +48,8 @@ export default function TrackPage() {
   const [isSortOpen,   setIsSortOpen]   = useState(false)
   const [isStatOpen,   setIsStatOpen]   = useState(false)
   const [selectedId,   setSelectedId]   = useState<string|null>(null)
-  const [detail,       setDetail]       = useState<Complaint|null>(null)
+  const [expandedId,   setExpandedId]   = useState<string|null>(null)
+  const detailRef = useRef<HTMLDivElement>(null)
 
   async function fetchData() {
     const { data: auth } = await supabase.auth.getUser()
@@ -59,7 +60,6 @@ export default function TrackPage() {
       .from("profiles").select("department").eq("id", uid).maybeSingle()
     const department = profile?.department ?? ""
 
-    // Try assigned_officer_id first
     let rows: Complaint[] = []
     const { data: d1 } = await supabase
       .from("complaints")
@@ -69,19 +69,17 @@ export default function TrackPage() {
       .order("created_at", { ascending: false })
     rows = (d1 ?? []) as unknown as Complaint[]
 
-    // Fallback: assigned_department (correct column name)
     if (rows.length === 0 && department) {
       const { data: d2, error: e2 } = await supabase
         .from("complaints")
         .select(COMPLAINT_SELECT)
-        .eq("assigned_department", department)   // ← fixed
+        .eq("assigned_department", department)
         .neq("status","rejected")
         .order("created_at", { ascending: false })
       if (e2) { setError(e2.message); setLoading(false); return }
       rows = (d2 ?? []) as unknown as Complaint[]
     }
 
-    // Workers
     let workerRows: Worker[] = []
     if (department) {
       const { data: wRows } = await supabase
@@ -112,6 +110,13 @@ export default function TrackPage() {
     return () => { supabase.removeChannel(channel) }
   }, [])
 
+  // Scroll to detail panel when it opens
+  useEffect(() => {
+    if (expandedId && detailRef.current) {
+      setTimeout(() => detailRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50)
+    }
+  }, [expandedId])
+
   const filtered = complaints
     .filter(c => {
       const q = search.toLowerCase()
@@ -127,6 +132,7 @@ export default function TrackPage() {
     })
 
   const complaintIds = complaints.map(c => c.id)
+  const expandedComplaint = expandedId ? complaints.find(c => c.id === expandedId) ?? null : null
 
   function exportCSV() {
     const rows = [
@@ -163,9 +169,7 @@ export default function TrackPage() {
           </div>
         </div>
         <div className="h-[400px] w-full">
-          <MapComponent
-            selectedComplaintId={selectedId}
-          />
+          <MapComponent selectedComplaintId={selectedId} />
         </div>
       </div>
 
@@ -253,6 +257,7 @@ export default function TrackPage() {
                 ) : filtered.map(c => {
                   const canAssign = !c.assigned_worker_id && (c.status==="submitted"||c.status==="under_review")
                   const isSelected = selectedId === c.id
+                  const isExpanded = expandedId === c.id
                   return (
                     <tr key={c.id}
                       onClick={() => setSelectedId(prev => prev===c.id ? null : c.id)}
@@ -279,7 +284,12 @@ export default function TrackPage() {
                       </td>
                       <td className="p-3" onClick={e=>e.stopPropagation()}>
                         <div className="flex items-center gap-3">
-                          <button onClick={() => setDetail(c)} className="text-xs font-semibold text-blue-600 hover:underline">View</button>
+                          <button
+                            onClick={() => setExpandedId(prev => prev===c.id ? null : c.id)}
+                            className="text-xs font-semibold text-blue-600 hover:underline"
+                          >
+                            {isExpanded ? "Close" : "View"}
+                          </button>
                           {canAssign && <AssignDropdown complaintId={c.id} workers={workers} onAssigned={fetchData}/>}
                         </div>
                       </td>
@@ -290,15 +300,20 @@ export default function TrackPage() {
             </table>
           </div>
         </div>
-      </div>
 
-      {detail && (
-        <ComplaintDetailPanel
-          complaint={detail as any} workers={workers}
-          onClose={() => setDetail(null)}
-          onAssigned={() => { void fetchData(); setDetail(null) }}
-        />
-      )}
+        {/* Inline detail panel — replaces modal, renders below the table */}
+        {expandedComplaint && (
+          <div ref={detailRef} className="mt-4">
+            <ComplaintDetailPanel
+              complaint={expandedComplaint as any}
+              workers={workers}
+              onClose={() => setExpandedId(null)}
+              onAssigned={() => { void fetchData(); setExpandedId(null) }}
+              inline
+            />
+          </div>
+        )}
+      </div>
     </div>
   )
 }
