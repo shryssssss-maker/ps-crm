@@ -5,8 +5,9 @@
 import React, { useState } from "react"
 import { AlertTriangle } from "lucide-react"
 import {
-  SEVERITY_META,
   STATUS_META,
+  getSeverityConfig,
+  isBreached,
   timeAgo,
   isBreached,
   type AuthorityComplaintRow,
@@ -37,8 +38,8 @@ function UrgentRow({
   c: AuthorityComplaintRow
   onSelect: (c: AuthorityComplaintRow) => void
 }) {
-  const sev = SEVERITY_META[c.effective_severity]
-  const st = STATUS_META[c.status]
+  const sev = getSeverityConfig(c.effective_severity)
+  const st  = STATUS_META[c.status]
 
   return (
     <button
