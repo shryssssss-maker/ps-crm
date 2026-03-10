@@ -1,5 +1,9 @@
 'use client';
 
+import { useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
 import Animatedheader from "@/components/Animatedheader";
 import FadedText from "@/components/Fadedtext";
 import AnimatedText from "@/components/Animatedtext";
@@ -9,9 +13,33 @@ import PhoneMockup from "@/components/PhoneMockup";
 import { MegaFooter } from "@/components/MegaFooter";
 import { useTheme } from "@/components/ThemeProvider";
 
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger, useGSAP);
+}
+
 export default function HomePage() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const dashboardRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (!dashboardRef.current) return;
+    gsap.fromTo(
+      dashboardRef.current,
+      { y: 50, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: dashboardRef.current,
+          start: 'top 85%',
+          toggleActions: 'play none none none',
+        },
+      }
+    );
+  }, []);
 
   return (
     <main className={`flex min-h-screen flex-col transition-colors duration-500 ${isDark ? "bg-[#2a221c]" : "bg-[#ddd1c0]"}`}>
@@ -52,26 +80,40 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* second full screen page with Empower */}
-      <section className="relative flex min-h-screen items-center px-6 py-16 lg:px-20 lg:py-10">
-        <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 lg:flex-row lg:items-center lg:gap-16">
-          <div className="relative order-1 w-full lg:w-1/2">
-            <FadedText text="Empower" animateOnScroll className="absolute -top-8 left-0 text-6xl md:text-8xl lg:text-9xl" />
-            <div className="relative z-10 pt-10 lg:pt-16">
+      {/* second full screen page – Transforming Public Service */}
+      <section className="relative flex min-h-screen items-center px-6 py-10 lg:px-20 lg:py-6">
+        <div className="relative mx-auto w-full max-w-7xl">
+          {/* Text block – upper left */}
+          <div className="relative z-10 max-w-lg">
+            <FadedText text="Empower" animateOnScroll className="absolute -top-6 left-0 text-5xl md:text-7xl lg:text-8xl" />
+            <div className="relative z-10 pt-6 lg:pt-10">
               <AnimatedText
                 as="h2"
-                text="Empower Communities"
-                className="text-4xl font-bold tracking-tight md:text-5xl"
+                text="Transforming Public Service with the PS-CRM"
+                className="text-3xl font-bold tracking-tight md:text-4xl lg:text-[2.75rem] lg:leading-tight"
                 animateOnScroll
               />
+
+              <DecorativeLine width="w-20" className="mt-4" />
+
               <AnimatedText
                 as="p"
-                text="Give citizens and administrators the tools they need to create lasting impact."
-                className="mt-6 max-w-md text-xl leading-relaxed"
+                text="Centralized, automated, and transparent grievance resolution for modern cities."
+                className="mt-4 max-w-md text-lg leading-relaxed"
                 animationDelay={0.2}
                 animateOnScroll
               />
             </div>
+          </div>
+
+          {/* Dashboard image – wide landscape rectangle */}
+          <div ref={dashboardRef} className="relative z-20 mt-6 ml-auto w-full lg:mt-4 lg:w-[65%]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/dashboard-mockup.png"
+              alt="PS-CRM Command Center Dashboard"
+              className={`w-full max-h-[45vh] object-cover object-top rounded-2xl ${isDark ? "shadow-[8px_8px_0px_0px_rgba(91,66,56,0.4)]" : "shadow-[8px_8px_0px_0px_rgba(160,140,120,0.3)]"}`}
+            />
           </div>
         </div>
       </section>
