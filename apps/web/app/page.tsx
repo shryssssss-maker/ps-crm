@@ -102,7 +102,7 @@ export default function HomePage() {
 
               <AnimatedText
                 as="p"
-                text="The mobile app through consetul nodr grievance resolutions, vote single grievance ticket's a vision and its centerpiece convenience specialized, victim this convenient amid organism of purposed facet, and outlet reproduction and bendolke communities, events this brands thereup and adornity."
+                text="Building trust through accountability. JanSamadhan provides citizens with a clear, real-time portal to track the entire grievance resolution process, from submission to final resolution."
                 className="mt-6 max-w-md text-base leading-relaxed opacity-80"
                 animationDelay={0.35}
                 animateOnScroll
