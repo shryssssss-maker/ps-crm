@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- Logo: Use the JanSamadhan emblem SVG here -->
-<img src="./Emblem.svg" alt="JanSamadhan Emblem" width="80" height="130" />
+<img src="./Emblem_rm.svg" alt="JanSamadhan Emblem" width="80" height="130" />
 
 # JanSamadhan
 
