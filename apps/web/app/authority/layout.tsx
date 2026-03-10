@@ -82,7 +82,7 @@ export default function AuthorityLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-[#161616]">
 
       <Sidebar
         {...sidebarConfig}
@@ -96,7 +96,7 @@ export default function AuthorityLayout({ children }: { children: React.ReactNod
 
         <header className="sticky top-0 z-[1001] flex h-14 shrink-0 items-center justify-between
                            border-b border-gray-200 bg-white px-5
-                           dark:border-gray-800 dark:bg-gray-950">
+                           dark:border-[#2a2a2a] dark:bg-[#1a1a1a]">
           {/* Mobile hamburger */}
           <button
             onClick={() => setIsSidebarOpen(true)}
