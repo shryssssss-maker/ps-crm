@@ -724,6 +724,6 @@ JanSamadhan is designed from day one for national scale. The Delhi pilot covers 
 
 *Built with ❤️ for 1.4 billion citizens*
 
-[🌐 Live Demo](https://jansamadhan.perkkk.dev/) · [📝 File an Issue](https://jansamadhan.perkkk.dev/) · Hackathon 2026 · Team JanSamadhan
+[🌐 Live Demo](https://jansamadhan.perkkk.dev/) · [📝 File an Issue](https://jansamadhan.perkkk.dev/) · Hackathon 2026 · Team 404
 
 </div>
