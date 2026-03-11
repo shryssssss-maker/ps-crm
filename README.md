@@ -559,7 +559,7 @@ stateDiagram-v2
 ## 🏗️ Application Architecture
 
 <p align="center">
-  <img src="docs/system-architecture.jpeg" width="100%"/>
+  <img src="docs/system-architecture.png" width="100%"/>
 </p>
 ---
 
